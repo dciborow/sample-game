@@ -1,0 +1,127 @@
+#!/bin/bash
+
+echo "====================================="
+echo "Script Validation for Unity Project"
+echo "====================================="
+
+# Check if all C# files exist
+echo ""
+echo "Checking C# scripts..."
+scripts=(
+    "Assets/Scripts/Abilities/AbilityData.cs"
+    "Assets/Scripts/Abilities/AbilitySystem.cs"
+    "Assets/Scripts/Abilities/MeleeAbilityData.cs"
+    "Assets/Scripts/Abilities/AreaAbilityData.cs"
+    "Assets/Scripts/Abilities/AreaIndicator.cs"
+    "Assets/Scripts/Player/PlayerController.cs"
+    "Assets/Scripts/Player/PlayerHealth.cs"
+    "Assets/Scripts/Player/PlayerUI.cs"
+    "Assets/Scripts/Player/IsometricCamera.cs"
+    "Assets/Scripts/Enemy/Enemy.cs"
+    "Assets/Scripts/DebugDisplay.cs"
+    "Assets/Editor/SceneSetup.cs"
+)
+
+all_exist=true
+for script in "${scripts[@]}"; do
+    if [ -f "$script" ]; then
+        echo "✓ $script"
+    else
+        echo "✗ $script - MISSING"
+        all_exist=false
+    fi
+done
+
+# Check if all meta files exist
+echo ""
+echo "Checking meta files..."
+for script in "${scripts[@]}"; do
+    if [ -f "${script}.meta" ]; then
+        echo "✓ ${script}.meta"
+    else
+        echo "✗ ${script}.meta - MISSING"
+        all_exist=false
+    fi
+done
+
+# Check ScriptableObject assets
+echo ""
+echo "Checking ScriptableObject assets..."
+assets=(
+    "Assets/ScriptableObjects/Abilities/LightMelee.asset"
+    "Assets/ScriptableObjects/Abilities/HeavyMelee.asset"
+    "Assets/ScriptableObjects/Abilities/GroundSlam.asset"
+)
+
+for asset in "${assets[@]}"; do
+    if [ -f "$asset" ]; then
+        echo "✓ $asset"
+    else
+        echo "✗ $asset - MISSING"
+        all_exist=false
+    fi
+done
+
+# Check for basic C# syntax issues
+echo ""
+echo "Checking for common syntax issues..."
+issue_found=false
+
+for script in "${scripts[@]}"; do
+    if [ -f "$script" ]; then
+        # Check for balanced braces
+        open_braces=$(grep -o '{' "$script" | wc -l)
+        close_braces=$(grep -o '}' "$script" | wc -l)
+        
+        if [ "$open_braces" != "$close_braces" ]; then
+            echo "⚠ $script - Unbalanced braces (open: $open_braces, close: $close_braces)"
+            issue_found=true
+        fi
+        
+        # Check for proper Unity namespace usage
+        if grep -q "using UnityEngine;" "$script"; then
+            echo "✓ $script - Has UnityEngine namespace"
+        else
+            if [[ "$script" != *"Editor"* ]]; then
+                echo "⚠ $script - Missing UnityEngine namespace"
+            fi
+        fi
+    fi
+done
+
+# Check folder structure
+echo ""
+echo "Checking folder structure..."
+folders=(
+    "Assets/Scripts"
+    "Assets/Scripts/Abilities"
+    "Assets/Scripts/Player"
+    "Assets/Scripts/Enemy"
+    "Assets/ScriptableObjects"
+    "Assets/ScriptableObjects/Abilities"
+    "Assets/Editor"
+    "Assets/Prefabs"
+    "Assets/Materials"
+)
+
+for folder in "${folders[@]}"; do
+    if [ -d "$folder" ]; then
+        echo "✓ $folder"
+    else
+        echo "✗ $folder - MISSING"
+        all_exist=false
+    fi
+done
+
+# Summary
+echo ""
+echo "====================================="
+if [ "$all_exist" = true ] && [ "$issue_found" = false ]; then
+    echo "✓ All checks passed!"
+    echo "====================================="
+    exit 0
+else
+    echo "✗ Some issues found. Please review above."
+    echo "====================================="
+    exit 1
+fi
