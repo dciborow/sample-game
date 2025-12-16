@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 /// <summary>
 /// Example manager that handles enemy death events
@@ -14,8 +15,17 @@ public class EnemyManager : MonoBehaviour
     {
         if (enemy != null)
         {
+            // Create a UnityAction to allow proper listener removal
+            UnityAction deathHandler = null;
+            deathHandler = () => 
+            {
+                OnEnemyDeath(enemy);
+                // Remove listener after death to prevent memory leak
+                enemy.onDeath.RemoveListener(deathHandler);
+            };
+            
             // Subscribe to the enemy's death event
-            enemy.onDeath.AddListener(() => OnEnemyDeath(enemy));
+            enemy.onDeath.AddListener(deathHandler);
         }
     }
     
@@ -35,5 +45,6 @@ public class EnemyManager : MonoBehaviour
         // - Spawn loot
         // - Trigger boss phase
         // - Load next scene
+        // Note: Always remove event listeners after handling to prevent memory leaks
     }
 }

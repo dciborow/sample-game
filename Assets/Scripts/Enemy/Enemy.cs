@@ -102,6 +102,10 @@ public class Enemy : MonoBehaviour
     
     private void Die()
     {
+        // Prevent multiple death events from race conditions
+        if (isDead)
+            return;
+            
         isDead = true;
         
         // Emit death event for external systems to handle
