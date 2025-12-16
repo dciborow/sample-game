@@ -190,7 +190,7 @@ private void Die()
 // In Enemy.cs
 private void Die()
 {
-    // Prevent race conditions - only die once
+    // Prevent duplicate death processing from multiple damage sources
     if (isDead)
         return;
         
@@ -201,9 +201,16 @@ private void Die()
 // In separate manager/system
 UnityAction deathHandler = null;
 deathHandler = () => {
-    Destroy(enemy.gameObject, 2f); // Behavior in appropriate system
-    // Remove listener to prevent memory leak
-    enemy.onDeath.RemoveListener(deathHandler);
+    // Handle death logic first
+    if (enemy != null)
+    {
+        // Remove listener before destroying to prevent issues
+        if (enemy.onDeath != null)
+        {
+            enemy.onDeath.RemoveListener(deathHandler);
+        }
+        Destroy(enemy.gameObject, 2f); // Behavior in appropriate system
+    }
 };
 enemy.onDeath.AddListener(deathHandler);
 ```
@@ -249,8 +256,8 @@ enemy.onDeath.AddListener(deathHandler);
 
 ## Important Notes
 
-### Thread Safety
-The Enemy class includes a guard in `Die()` to prevent race conditions when multiple abilities hit simultaneously. The death event will only fire once, even if `TakeDamage` is called concurrently.
+### Duplicate Death Prevention
+The Enemy class includes a guard in `Die()` to prevent duplicate death processing when multiple abilities hit in the same frame. The death event will only fire once, even if `TakeDamage` is called multiple times rapidly. This protects against multiple damage sources triggering death simultaneously within Unity's main thread execution.
 
 ### Memory Management
-Always remove event listeners after handling death. The lambda closure pattern captures the enemy reference, which prevents garbage collection. Use the pattern shown in EnemyManager where the listener removes itself after execution.
+Always remove event listeners after handling death. The lambda closure pattern captures the enemy reference, which prevents garbage collection. Use the pattern shown in EnemyManager where the listener removes itself after execution. Always check if the enemy and event are still valid before attempting to remove listeners, especially when destruction is involved.

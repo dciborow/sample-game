@@ -21,7 +21,11 @@ public class EnemyManager : MonoBehaviour
             {
                 OnEnemyDeath(enemy);
                 // Remove listener after death to prevent memory leak
-                enemy.onDeath.RemoveListener(deathHandler);
+                // Check if enemy still exists before removing listener
+                if (enemy != null && enemy.onDeath != null)
+                {
+                    enemy.onDeath.RemoveListener(deathHandler);
+                }
             };
             
             // Subscribe to the enemy's death event
