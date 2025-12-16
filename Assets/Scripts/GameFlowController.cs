@@ -116,18 +116,21 @@ public class GameFlowController : MonoBehaviour
     
     private void TransitionToHome()
     {
+        Debug.Log($"[GameFlow] State transition: {currentState} → {GameState.Home}");
         currentState = GameState.Home;
         LoadScene(HOME_SCENE);
     }
     
     private void TransitionToAdventure()
     {
+        Debug.Log($"[GameFlow] State transition: {currentState} → {GameState.Adventure}");
         currentState = GameState.Adventure;
         LoadScene(ADVENTURE_SCENE);
     }
     
     private void TransitionToBoss()
     {
+        Debug.Log($"[GameFlow] State transition: {currentState} → {GameState.Boss}");
         currentState = GameState.Boss;
         LoadScene(BOSS_SCENE);
     }
