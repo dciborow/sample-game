@@ -17,7 +17,8 @@ public class DebugDisplay : MonoBehaviour
         GUILayout.BeginArea(new Rect(10, 10, 300, 400));
         GUILayout.Label("=== Player Status ===");
         GUILayout.Label($"Health: {playerHealth.GetHealthPercent() * 100:F0}%");
-        GUILayout.Label($"State: {abilitySystem.currentState}");
+        GUILayout.Label($"Player State: {playerController.GetPlayerState()}");
+        GUILayout.Label($"Ability State: {abilitySystem.currentState}");
         
         GUILayout.Space(10);
         GUILayout.Label("=== Cooldowns ===");

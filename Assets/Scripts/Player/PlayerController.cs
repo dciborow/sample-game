@@ -24,8 +24,10 @@ public class PlayerController : MonoBehaviour
     private Vector3 moveDirection;
     private Vector3 facingDirection = Vector3.forward;
     
+    // Player locomotion state
+    private PlayerState playerState = PlayerState.Idle;
+    
     // Dodge state
-    private bool isDodging;
     private float dodgeTimer;
     private Vector3 dodgeDirection;
     private float dodgeCooldownTimer;
@@ -46,21 +48,36 @@ public class PlayerController : MonoBehaviour
         facingDirection = transform.forward;
     }
     
+    /// <summary>
+    /// Single source of truth for "can the player act?"
+    /// </summary>
+    private bool CanAct()
+    {
+        return playerState == PlayerState.Idle;
+    }
+    
     void Update()
     {
+        UpdatePlayerState();
         HandleInput();
         UpdateDodge();
         UpdateMovement();
         UpdateInputBuffer();
     }
     
+    private void UpdatePlayerState()
+    {
+        // Transition from Acting back to Idle when ability finishes
+        if (playerState == PlayerState.Acting && abilitySystem.currentState == AbilityState.Idle)
+        {
+            playerState = PlayerState.Idle;
+        }
+    }
+    
     private void HandleInput()
     {
-        // Only accept input when not in ability execution or dodging
-        bool canMove = abilitySystem.currentState == AbilityState.Idle && !isDodging;
-        
         // Movement input
-        if (canMove)
+        if (CanAct())
         {
             float horizontal = Input.GetAxisRaw("Horizontal");
             float vertical = Input.GetAxisRaw("Vertical");
@@ -78,7 +95,7 @@ public class PlayerController : MonoBehaviour
         }
         
         // Dodge input
-        if (Input.GetKeyDown(KeyCode.Space) && canMove && dodgeCooldownTimer <= 0)
+        if (Input.GetKeyDown(KeyCode.Space) && CanAct() && dodgeCooldownTimer <= 0)
         {
             StartDodge();
         }
@@ -101,7 +118,7 @@ public class PlayerController : MonoBehaviour
     private void TryUseAbility(int abilityIndex)
     {
         // Check if we can use ability immediately
-        if (abilitySystem.currentState == AbilityState.Idle && !isDodging)
+        if (CanAct())
         {
             Vector3 targetPos = transform.position + facingDirection * 5f;
             
@@ -115,9 +132,13 @@ public class PlayerController : MonoBehaviour
                 }
             }
             
-            abilitySystem.TryUseAbility(abilityIndex, targetPos, facingDirection);
+            if (abilitySystem.TryUseAbility(abilityIndex, targetPos, facingDirection))
+            {
+                // Ability started - transition to Acting state
+                playerState = PlayerState.Acting;
+            }
         }
-        else if (abilitySystem.currentState == AbilityState.Recovery)
+        else if (playerState == PlayerState.Acting && abilitySystem.currentState == AbilityState.Recovery)
         {
             // Buffer the input during recovery phase
             bufferedInput = new BufferedInput
@@ -142,7 +163,7 @@ public class PlayerController : MonoBehaviour
         }
         
         // Try to execute buffered input when able
-        if (abilitySystem.currentState == AbilityState.Idle && !isDodging)
+        if (CanAct())
         {
             TryUseAbility(bufferedInput.abilityIndex);
             bufferedInput.isValid = false;
@@ -151,7 +172,7 @@ public class PlayerController : MonoBehaviour
     
     private void StartDodge()
     {
-        isDodging = true;
+        playerState = PlayerState.Dodging;
         dodgeTimer = dodgeDuration;
         dodgeCooldownTimer = dodgeCooldown;
         dodgeDirection = moveDirection.magnitude > 0.1f ? moveDirection : facingDirection;
@@ -165,14 +186,14 @@ public class PlayerController : MonoBehaviour
             dodgeCooldownTimer -= Time.deltaTime;
         }
         
-        if (!isDodging)
+        if (playerState != PlayerState.Dodging)
             return;
             
         dodgeTimer -= Time.deltaTime;
         
         if (dodgeTimer <= 0)
         {
-            isDodging = false;
+            playerState = PlayerState.Idle;
             return;
         }
         
@@ -184,7 +205,7 @@ public class PlayerController : MonoBehaviour
     
     private void UpdateMovement()
     {
-        if (isDodging || abilitySystem.currentState != AbilityState.Idle)
+        if (!CanAct())
             return;
             
         // Apply movement
@@ -211,4 +232,22 @@ public class PlayerController : MonoBehaviour
     {
         return dodgeCooldownTimer / dodgeCooldown;
     }
+    
+    /// <summary>
+    /// Get current player state for debugging/UI
+    /// </summary>
+    public PlayerState GetPlayerState()
+    {
+        return playerState;
+    }
+}
+
+/// <summary>
+/// Player locomotion state - answers "can I act?"
+/// </summary>
+public enum PlayerState
+{
+    Idle,      // Ready to act
+    Dodging,   // Performing dodge
+    Acting     // Executing ability
 }
