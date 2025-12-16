@@ -1,7 +1,9 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// Base ScriptableObject for ability data with timing phases
+/// Pure timing + effect dispatch - no combat logic
 /// </summary>
 [CreateAssetMenu(fileName = "NewAbility", menuName = "Abilities/Ability Data")]
 public class AbilityData : ScriptableObject
@@ -16,13 +18,11 @@ public class AbilityData : ScriptableObject
     public float activeTime = 0.3f;
     public float recoveryTime = 0.3f;
     
-    [Header("Damage & Range")]
-    public float damage = 10f;
-    public float range = 2f;
-    
     [Header("Targeting")]
     public AbilityTargetType targetType;
-    public float areaOfEffectRadius = 0f;
+    
+    [Header("Effects")]
+    public List<EffectData> effects = new List<EffectData>();
     
     /// <summary>
     /// Total duration of the ability execution
@@ -38,11 +38,27 @@ public class AbilityData : ScriptableObject
     }
     
     /// <summary>
-    /// Called during the active phase
+    /// Called during the active phase - dispatches effects
     /// </summary>
     public virtual void OnExecute(AbilityContext context)
     {
-        // Override in derived classes for specific behavior
+        // Dispatch all effects
+        foreach (var effect in effects)
+        {
+            if (effect != null)
+            {
+                EffectContext effectContext = new EffectContext
+                {
+                    source = context.caster,
+                    position = context.targetPosition,
+                    direction = context.direction,
+                    rotation = Quaternion.LookRotation(context.direction),
+                    timestamp = context.executionTime
+                };
+                
+                effect.Dispatch(effectContext);
+            }
+        }
     }
 }
 

@@ -1,41 +1,31 @@
 using UnityEngine;
 
 /// <summary>
-/// Ground-targeted area ability
+/// Ground-targeted area ability that spawns effects at target position
+/// Pure timing - effects handle the rest
 /// </summary>
 [CreateAssetMenu(fileName = "NewAreaAbility", menuName = "Abilities/Area Ability")]
 public class AreaAbilityData : AbilityData
 {
-    [Header("Visual Settings")]
-    public GameObject areaIndicatorPrefab;
-
-    [Header("Targeting Settings")]
-    public LayerMask enemyLayerMask;
-    
     public override void OnExecute(AbilityContext context)
     {
-        base.OnExecute(context);
-        
-        // Deal damage to all enemies in the target area
-        Collider[] hits = Physics.OverlapSphere(context.targetPosition, areaOfEffectRadius, enemyLayerMask);
-        
-        foreach (var hit in hits)
+        // Position area at target location
+        EffectContext effectContext = new EffectContext
         {
-            if (hit.CompareTag("Enemy"))
+            source = context.caster,
+            position = context.targetPosition,
+            direction = context.direction,
+            rotation = Quaternion.identity,
+            timestamp = context.executionTime
+        };
+        
+        // Dispatch all effects
+        foreach (var effect in effects)
+        {
+            if (effect != null)
             {
-                var enemy = hit.GetComponent<Enemy>();
-                if (enemy != null)
-                {
-                    enemy.TakeDamage(damage);
-                }
+                effect.Dispatch(effectContext);
             }
-        }
-        
-        // Create visual effect at target position
-        if (areaIndicatorPrefab != null)
-        {
-            GameObject vfx = Instantiate(areaIndicatorPrefab, context.targetPosition, Quaternion.identity);
-            Destroy(vfx, 1f);
         }
     }
 }
