@@ -66,6 +66,12 @@ public class Hitbox : MonoBehaviour
     
     private float elapsedTime;
     
+    void Start()
+    {
+        // Register with EffectResolver for processing
+        EffectResolver.RegisterEffect(gameObject);
+    }
+    
     void Update()
     {
         elapsedTime += Time.deltaTime;

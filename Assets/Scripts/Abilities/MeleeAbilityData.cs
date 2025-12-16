@@ -9,23 +9,8 @@ public class MeleeAbilityData : AbilityData
 {
     public override void OnExecute(AbilityContext context)
     {
-        // Position hitbox in front of caster
-        EffectContext effectContext = new EffectContext
-        {
-            source = context.caster,
-            position = context.caster.transform.position,
-            direction = context.direction,
-            rotation = Quaternion.LookRotation(context.direction),
-            timestamp = context.executionTime
-        };
-        
-        // Dispatch all effects
-        foreach (var effect in effects)
-        {
-            if (effect != null)
-            {
-                effect.Dispatch(effectContext);
-            }
-        }
+        // Override position to be at caster location for melee
+        context.targetPosition = context.caster.transform.position;
+        base.OnExecute(context);
     }
 }

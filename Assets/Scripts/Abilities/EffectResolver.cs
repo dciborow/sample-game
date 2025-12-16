@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// Resolves effects (hitboxes, areas) into game actions (damage, etc.)
@@ -10,42 +11,52 @@ public class EffectResolver : MonoBehaviour
     public float baseDamage = 10f;
     public LayerMask targetLayers;
     
-    private void Start()
+    private static EffectResolver instance;
+    private HashSet<int> processedEffects = new HashSet<int>();
+    
+    private void Awake()
     {
-        // Subscribe to hitbox and area events
-        StartCoroutine(ProcessEffects());
+        instance = this;
     }
     
-    private System.Collections.IEnumerator ProcessEffects()
+    /// <summary>
+    /// Called by effects when they are spawned
+    /// </summary>
+    public static void RegisterEffect(GameObject effect)
     {
-        while (true)
+        if (instance != null)
         {
-            // Find all active hitboxes
-            Hitbox[] hitboxes = FindObjectsOfType<Hitbox>();
-            foreach (var hitbox in hitboxes)
-            {
-                ProcessHitbox(hitbox);
-            }
+            instance.ProcessEffect(effect);
+        }
+    }
+    
+    private void ProcessEffect(GameObject effect)
+    {
+        int effectId = effect.GetInstanceID();
+        if (processedEffects.Contains(effectId))
+            return;
             
-            // Find all active areas
-            AreaMarker[] areas = FindObjectsOfType<AreaMarker>();
-            foreach (var area in areas)
-            {
-                ProcessArea(area);
-            }
-            
-            yield return new WaitForSeconds(0.05f); // Check every 50ms
+        processedEffects.Add(effectId);
+        
+        // Process hitbox
+        var hitbox = effect.GetComponent<Hitbox>();
+        if (hitbox != null)
+        {
+            ProcessHitbox(hitbox);
+            return;
+        }
+        
+        // Process area
+        var area = effect.GetComponent<AreaMarker>();
+        if (area != null)
+        {
+            ProcessArea(area);
+            return;
         }
     }
     
     private void ProcessHitbox(Hitbox hitbox)
     {
-        if (hitbox.gameObject.CompareTag("Processed"))
-            return;
-            
-        // Mark as processed to avoid re-processing
-        hitbox.gameObject.tag = "Processed";
-        
         Collider[] hits = null;
         
         // Get colliders based on shape
@@ -88,12 +99,6 @@ public class EffectResolver : MonoBehaviour
     
     private void ProcessArea(AreaMarker area)
     {
-        if (area.gameObject.CompareTag("Processed"))
-            return;
-            
-        // Mark as processed to avoid re-processing
-        area.gameObject.tag = "Processed";
-        
         // Get all colliders in area
         Collider[] hits = Physics.OverlapSphere(area.transform.position, area.radius);
         
