@@ -13,6 +13,7 @@ public class EncounterController : MonoBehaviour
     
     private HashSet<Enemy> activeEnemies = new HashSet<Enemy>();
     private bool encounterCompleted = false;
+    private bool hasRegisteredEnemies = false;
     
     void Start()
     {
@@ -30,6 +31,7 @@ public class EncounterController : MonoBehaviour
         if (enemy != null && !encounterCompleted)
         {
             activeEnemies.Add(enemy);
+            hasRegisteredEnemies = true;
         }
     }
     
@@ -43,8 +45,8 @@ public class EncounterController : MonoBehaviour
             
         activeEnemies.Remove(enemy);
         
-        // Check if encounter is complete
-        if (activeEnemies.Count == 0)
+        // Check if encounter is complete (only if we've registered enemies)
+        if (hasRegisteredEnemies && activeEnemies.Count == 0)
         {
             CompleteEncounter();
         }
