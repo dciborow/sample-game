@@ -5,45 +5,93 @@ This document describes the architecture of the minimal, composable, data-driven
 
 ## Core Design Principles
 
-### 1. Data-Driven Design
-All abilities are defined as ScriptableObjects, allowing designers to create and tune abilities without writing code. This makes the system:
-- **Composable**: Mix and match ability properties
-- **Scalable**: Add new abilities easily
+### 1. Primitive Abilities ("Verbs, not Moves")
+Abilities are designed as pure timing + effect dispatch mechanisms:
+- **No Combat Logic**: Abilities don't know about damage, enemies, or player stats
+- **No Entity References**: Abilities don't reference player/enemy internals
+- **No Conditional Behavior**: Abilities don't make decisions
+- **Pure Effect Dispatch**: Abilities simply spawn effects at the right time
+
+This makes abilities feel like "verbs" (actions) rather than "moves" (pre-programmed behaviors), enabling:
+- Reusability across different entity types
+- Easier testing and validation
+- Clear separation of concerns
+- Extensibility without modifying core ability code
+
+### 2. Data-Driven Design
+All abilities and effects are defined as ScriptableObjects, allowing designers to create and tune without writing code. This makes the system:
+- **Composable**: Mix and match effects with abilities
+- **Scalable**: Add new abilities and effects easily
 - **Maintainable**: Single source of truth for ability data
 - **Designer-friendly**: No code changes required for balance
 
-### 2. State Machine Pattern
+### 3. State Machine Pattern
 The ability execution follows a clear state machine with phases:
 - **Idle**: Ready to act
 - **WindUp**: Telegraph/preparation
 - **Active**: Effect execution
 - **Recovery**: Cool-down before next action
 
-### 3. Input Buffering
+### 4. Input Buffering
 Inputs during recovery phase are buffered and executed when possible, providing:
 - Responsive gameplay
 - Smooth ability chaining
 - Forgiveness for imperfect timing
+
+### 5. Effect Resolution Separation
+Effects are spawned as GameObjects, then interpreted by EffectResolver:
+- **Decoupled**: Effect spawning is separate from effect interpretation
+- **Flexible**: Same effect can be interpreted differently by different resolvers
+- **Extensible**: Add new effect types without modifying abilities
 
 ## System Components
 
 ### Ability System
 
 #### AbilityData (ScriptableObject)
-Base class for all abilities with timing phases:
+Base class for all abilities with timing phases - pure timing + effect dispatch:
 ```csharp
 - cooldown: Time before reuse
 - windUpTime: Telegraph duration
 - activeTime: Effect window
 - recoveryTime: Post-effect lockout
-- damage: Base damage value
-- range: Maximum distance
 - targetType: Self/Direction/GroundTarget
+- effects: List of EffectData to dispatch
 ```
 
+**Key Principle:** Abilities are now "primitive verbs" that only:
+- Define timing phases
+- Dispatch generic effects
+- Do NOT know about damage, enemies, or player internals
+
 **Derived Types:**
-- `MeleeAbilityData`: Cone-based melee attacks
-- `AreaAbilityData`: Ground-targeted AoE
+- `MeleeAbilityData`: Spawns hitbox at caster position
+- `AreaAbilityData`: Spawns area at target position
+
+#### EffectData (ScriptableObject)
+Base class for effects that abilities dispatch:
+```csharp
+- effectName: Display name
+- Dispatch(): Spawns effect in game world
+```
+
+**Effect Types:**
+- `HitboxEffect`: Spawns a hitbox (sphere/box/cone) with duration
+- `AreaEffect`: Spawns an area marker with radius and duration
+
+**Key Principle:** Effects are pure data that spawn GameObjects. They don't interpret themselves.
+
+#### EffectResolver (Component)
+System that interprets spawned effects into game actions:
+- Processes active Hitbox and AreaMarker components
+- Applies damage to appropriate targets
+- Decouples effect spawning from effect interpretation
+- Can be extended for healing, status effects, knockback, etc.
+
+**Key Methods:**
+- `ProcessHitbox()`: Resolves hitbox into damage application
+- `ProcessArea()`: Resolves area marker into damage application
+- `ApplyEffectToTarget()`: Applies appropriate effect to target
 
 #### AbilitySystem (Component)
 Manages ability slots, cooldowns, and state machine:
@@ -151,12 +199,15 @@ Menu command to auto-setup demo scene:
 5. After windUpTime:
    - Transition to Active
    - Call ability.OnExecute()
-   - Apply damage to targets
+   - Ability dispatches effects (spawns hitboxes/areas)
 6. After activeTime:
    - Transition to Recovery
 7. After recoveryTime:
    - Transition to Idle
    - Process buffered input if any
+8. In parallel:
+   - EffectResolver processes active hitboxes/areas
+   - Resolves into damage/healing/status effects
 ```
 
 ### Input Buffering Flow
@@ -218,11 +269,47 @@ Current design supports:
 [CreateAssetMenu(fileName = "NewAbilityType", menuName = "Abilities/Custom")]
 public class CustomAbilityData : AbilityData
 {
-    public CustomParams customParams;
-    
     public override void OnExecute(AbilityContext context)
     {
-        // Custom logic here
+        // Position effect spawn point
+        EffectContext effectContext = new EffectContext
+        {
+            source = context.caster,
+            position = context.targetPosition,
+            direction = context.direction,
+            rotation = Quaternion.LookRotation(context.direction),
+            timestamp = context.executionTime
+        };
+        
+        // Dispatch effects - keep it primitive!
+        foreach (var effect in effects)
+        {
+            if (effect != null)
+            {
+                effect.Dispatch(effectContext);
+            }
+        }
+    }
+}
+```
+
+### Adding New Effect Types
+```csharp
+[CreateAssetMenu(fileName = "NewEffect", menuName = "Effects/Custom")]
+public class CustomEffect : EffectData
+{
+    public float customParam;
+    
+    public override void Dispatch(EffectContext context)
+    {
+        // Spawn GameObject with marker component
+        GameObject marker = new GameObject("CustomEffect");
+        marker.transform.position = context.position;
+        
+        var component = marker.AddComponent<CustomMarker>();
+        component.source = context.source;
+        component.customData = customParam;
+        // EffectResolver will process this marker
     }
 }
 ```
@@ -345,10 +432,14 @@ Assets/
 │   └── SceneSetup.cs              # Scene setup utility
 ├── Scripts/
 │   ├── Abilities/
-│   │   ├── AbilityData.cs         # Base ability SO
+│   │   ├── AbilityData.cs         # Base ability SO (primitive timing)
 │   │   ├── AbilitySystem.cs       # Ability execution manager
-│   │   ├── MeleeAbilityData.cs    # Melee attack type
-│   │   ├── AreaAbilityData.cs     # AoE attack type
+│   │   ├── MeleeAbilityData.cs    # Melee ability (spawns hitbox)
+│   │   ├── AreaAbilityData.cs     # Area ability (spawns area)
+│   │   ├── EffectData.cs          # Base effect SO
+│   │   ├── HitboxEffect.cs        # Hitbox effect type
+│   │   ├── AreaEffect.cs          # Area effect type
+│   │   ├── EffectResolver.cs      # Interprets effects into actions
 │   │   └── AreaIndicator.cs       # Visual indicator
 │   ├── Player/
 │   │   ├── PlayerController.cs    # Main player control
