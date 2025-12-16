@@ -19,7 +19,7 @@ public class GameFlowController : MonoBehaviour
     // Current game state
     private GameState currentState = GameState.Home;
     
-    private enum GameState
+    public enum GameState
     {
         Home,
         Adventure,
@@ -75,6 +75,14 @@ public class GameFlowController : MonoBehaviour
         {
             instance.TransitionToHome();
         }
+    }
+    
+    /// <summary>
+    /// Get current game state for debugging
+    /// </summary>
+    public static GameState GetCurrentState()
+    {
+        return instance != null ? instance.currentState : GameState.Home;
     }
     
     // Scene transition handlers

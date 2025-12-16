@@ -20,7 +20,7 @@ public class AdventureCompleteTrigger : MonoBehaviour
     
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other != null && other.CompareTag("Player"))
         {
             TriggerAdventureComplete();
         }
