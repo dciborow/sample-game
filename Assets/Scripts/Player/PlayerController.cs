@@ -212,9 +212,6 @@ public class PlayerController : MonoBehaviour
         Vector3 movement = moveDirection * moveSpeed * Time.deltaTime;
         characterController.Move(movement);
         
-        // Apply gravity
-        characterController.Move(Vector3.down * 9.81f * Time.deltaTime);
-        
         // Rotate to face direction
         if (facingDirection.magnitude > 0.1f)
         {
