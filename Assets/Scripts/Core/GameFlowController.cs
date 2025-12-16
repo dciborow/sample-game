@@ -13,6 +13,11 @@ namespace SampleGame.Core
     /// </summary>
     public class GameFlowController : MonoBehaviour
     {
+        // Scene name constants
+        private const string HOME_SCENE = "HomeScene";
+        private const string ADVENTURE_SCENE = "AdventureScene";
+        private const string BOSS_SCENE = "BossScene";
+        
         private static GameFlowController _instance;
         
         private void Awake()
@@ -44,9 +49,9 @@ namespace SampleGame.Core
         private void Start()
         {
             // Start at Home if not already there
-            if (SceneManager.GetActiveScene().name != "HomeScene")
+            if (SceneManager.GetActiveScene().name != HOME_SCENE)
             {
-                LoadScene("HomeScene");
+                LoadScene(HOME_SCENE);
             }
         }
         
@@ -57,7 +62,7 @@ namespace SampleGame.Core
         private void HandleHomeComplete()
         {
             Debug.Log("[GameFlow] Home Complete → Loading Adventure");
-            LoadScene("AdventureScene");
+            LoadScene(ADVENTURE_SCENE);
         }
         
         /// <summary>
@@ -67,7 +72,7 @@ namespace SampleGame.Core
         private void HandleAdventureComplete()
         {
             Debug.Log("[GameFlow] Adventure Complete → Loading Boss");
-            LoadScene("BossScene");
+            LoadScene(BOSS_SCENE);
         }
         
         /// <summary>
@@ -77,7 +82,7 @@ namespace SampleGame.Core
         private void HandleBossComplete()
         {
             Debug.Log("[GameFlow] Boss Complete → Loading Home");
-            LoadScene("HomeScene");
+            LoadScene(HOME_SCENE);
         }
         
         /// <summary>
