@@ -58,9 +58,9 @@ public class PlayerController : MonoBehaviour
     
     void Update()
     {
+        UpdatePlayerState();
         HandleInput();
         UpdateDodge();
-        UpdatePlayerState();
         UpdateMovement();
         UpdateInputBuffer();
     }
