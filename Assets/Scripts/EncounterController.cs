@@ -15,9 +15,10 @@ public class EncounterController : MonoBehaviour
     private bool encounterCompleted = false;
     private bool hasRegisteredEnemies = false;
     
-    void Start()
+    void Awake()
     {
         // Auto-discover and register all enemies in the scene
+        // Using Awake() ensures this runs before enemy Start() methods
         Enemy[] enemies = FindObjectsOfType<Enemy>();
         foreach (Enemy enemy in enemies)
         {
