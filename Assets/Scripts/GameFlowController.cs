@@ -9,7 +9,13 @@ using UnityEngine.SceneManagement;
 public class GameFlowController : MonoBehaviour
 {
     // Singleton instance
-    private static GameFlowController instance;
+    private static GameFlowController _instance;
+    
+    public static GameFlowController Instance
+    {
+        get { return _instance; }
+        private set { _instance = value; }
+    }
     
     // Scene names
     private const string HOME_SCENE = "HomeScene";
@@ -29,13 +35,13 @@ public class GameFlowController : MonoBehaviour
     void Awake()
     {
         // Singleton pattern - only one GameFlowController should exist
-        if (instance != null && instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
         
-        instance = this;
+        Instance = this;
         DontDestroyOnLoad(gameObject);
         
         // Subscribe to game events
@@ -47,11 +53,12 @@ public class GameFlowController : MonoBehaviour
     void OnDestroy()
     {
         // Unsubscribe from events
-        if (instance == this)
+        if (Instance == this)
         {
             GameEvents.OnPlayerDeath -= HandlePlayerDeath;
             GameEvents.OnAdventureComplete -= HandleAdventureComplete;
             GameEvents.OnBossDefeated -= HandleBossDefeated;
+            Instance = null;
         }
     }
     
@@ -60,9 +67,9 @@ public class GameFlowController : MonoBehaviour
     /// </summary>
     public static void StartGame()
     {
-        if (instance != null)
+        if (Instance != null)
         {
-            instance.TransitionToAdventure();
+            Instance.TransitionToAdventure();
         }
     }
     
@@ -71,9 +78,9 @@ public class GameFlowController : MonoBehaviour
     /// </summary>
     public static void ReturnToHome()
     {
-        if (instance != null)
+        if (Instance != null)
         {
-            instance.TransitionToHome();
+            Instance.TransitionToHome();
         }
     }
     
@@ -82,7 +89,7 @@ public class GameFlowController : MonoBehaviour
     /// </summary>
     public static GameState GetCurrentState()
     {
-        return instance != null ? instance.currentState : GameState.Home;
+        return Instance != null ? Instance.currentState : GameState.Home;
     }
     
     // Scene transition handlers

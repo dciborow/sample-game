@@ -10,6 +10,8 @@ public class AdventureCompleteTrigger : MonoBehaviour
     public bool autoTriggerOnStart = false;
     public float autoTriggerDelay = 5f;
     
+    private bool hasTriggered = false;
+    
     void Start()
     {
         if (autoTriggerOnStart)
@@ -28,6 +30,11 @@ public class AdventureCompleteTrigger : MonoBehaviour
     
     public void TriggerAdventureComplete()
     {
+        if (hasTriggered)
+            return;
+            
+        hasTriggered = true;
+        CancelInvoke(nameof(TriggerAdventureComplete));
         GameEvents.TriggerAdventureComplete();
         // Disable this trigger after use
         enabled = false;
