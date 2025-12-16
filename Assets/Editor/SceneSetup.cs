@@ -71,7 +71,6 @@ public class SceneSetup
         Camera cam = cameraObj.AddComponent<Camera>();
         cameraObj.AddComponent<IsometricCamera>();
         
-        
         // Create Light
         GameObject lightObj = new GameObject("Directional Light");
         Light light = lightObj.AddComponent<Light>();
