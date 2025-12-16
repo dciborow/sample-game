@@ -27,6 +27,7 @@ public class Enemy : MonoBehaviour
     private Transform player;
     private float attackCooldownTimer;
     private bool isDead;
+    private EncounterController encounterController;
     
     /// <summary>
     /// Check if enemy is dead
@@ -37,6 +38,14 @@ public class Enemy : MonoBehaviour
     {
         currentHealth = maxHealth;
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
+    }
+    
+    /// <summary>
+    /// Set the encounter controller for this enemy
+    /// </summary>
+    public void SetEncounterController(EncounterController controller)
+    {
+        encounterController = controller;
     }
     
     void Update()
@@ -111,6 +120,12 @@ public class Enemy : MonoBehaviour
             
         isDead = true;
         
+        // Notify encounter controller if one exists
+        if (encounterController != null)
+        {
+            encounterController.OnEnemyDefeated(this);
+        }
+
         // Trigger boss defeated event if this is a boss
         if (isBoss)
         {

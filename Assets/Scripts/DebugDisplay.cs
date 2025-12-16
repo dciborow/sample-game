@@ -8,9 +8,11 @@ public class DebugDisplay : MonoBehaviour
     public PlayerController playerController;
     public AbilitySystem abilitySystem;
     public PlayerHealth playerHealth;
+    public EncounterController encounterController;
     
     void OnGUI()
     {
+        // encounterController is optional - it's checked separately below
         if (playerController == null || abilitySystem == null || playerHealth == null)
             return;
             
@@ -33,6 +35,24 @@ public class DebugDisplay : MonoBehaviour
                 string status = ready ? "Ready" : $"{abilitySystem.GetCooldownPercent(i) * 100:F0}%";
                 GUILayout.Label($"{ability.ability.abilityName}: {status}");
             }
+        }
+        
+        GUILayout.Space(10);
+        GUILayout.Label("=== Encounter ===");
+        if (encounterController != null)
+        {
+            if (encounterController.IsEncounterComplete())
+            {
+                GUILayout.Label("Status: COMPLETE");
+            }
+            else
+            {
+                GUILayout.Label($"Enemies Remaining: {encounterController.GetRemainingEnemyCount()}");
+            }
+        }
+        else
+        {
+            GUILayout.Label("No encounter controller");
         }
         
         GUILayout.Space(10);

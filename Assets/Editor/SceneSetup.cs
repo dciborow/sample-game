@@ -82,6 +82,10 @@ public class SceneSetup
         enemyMat.color = Color.red;
         enemy.GetComponent<MeshRenderer>().material = enemyMat;
         
+        // Create Encounter Controller (will auto-discover enemies in Start)
+        GameObject encounterObj = new GameObject("EncounterController");
+        EncounterController encounterController = encounterObj.AddComponent<EncounterController>();
+        
         // Create Camera
         GameObject cameraObj = new GameObject("Main Camera");
         cameraObj.tag = "MainCamera";
@@ -93,6 +97,7 @@ public class SceneSetup
         debugDisplay.playerController = player.GetComponent<PlayerController>();
         debugDisplay.abilitySystem = player.GetComponent<AbilitySystem>();
         debugDisplay.playerHealth = player.GetComponent<PlayerHealth>();
+        debugDisplay.encounterController = encounterController;
         
         // Create Light
         GameObject lightObj = new GameObject("Directional Light");
