@@ -33,8 +33,7 @@ public class PlayerHealth : MonoBehaviour
     {
         // Simple death handling
         Debug.Log("Player died!");
-        // Trigger game flow event
-        GameEvents.TriggerPlayerDeath();
+        // In a real game, this would trigger game over UI
     }
     
     public float GetHealthPercent()

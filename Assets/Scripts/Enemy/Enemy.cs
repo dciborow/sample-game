@@ -1,9 +1,7 @@
 using UnityEngine;
-using UnityEngine.Events;
 
 /// <summary>
 /// Simple enemy with health and basic AI
-/// Emits death event for external systems to handle
 /// </summary>
 public class Enemy : MonoBehaviour
 {
@@ -11,18 +9,12 @@ public class Enemy : MonoBehaviour
     public float maxHealth = 50f;
     private float currentHealth;
     
-    [Header("Boss Settings")]
-    public bool isBoss = false;
-    
     [Header("AI")]
     public float detectionRange = 10f;
     public float attackRange = 2f;
     public float moveSpeed = 2f;
     public float attackCooldown = 2f;
     public float attackDamage = 10f;
-    
-    [Header("Events")]
-    public UnityEvent onDeath = new UnityEvent();
     
     private Transform player;
     private float attackCooldownTimer;
@@ -124,12 +116,6 @@ public class Enemy : MonoBehaviour
         if (encounterController != null)
         {
             encounterController.OnEnemyDefeated(this);
-        }
-
-        // Trigger boss defeated event if this is a boss
-        if (isBoss)
-        {
-            GameEvents.TriggerBossDefeated();
         }
         
         // Simple death - destroy after delay
