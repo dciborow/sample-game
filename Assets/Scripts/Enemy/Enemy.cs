@@ -19,11 +19,13 @@ public class Enemy : MonoBehaviour
     private Transform player;
     private float attackCooldownTimer;
     private bool isDead;
+    private EncounterController encounterController;
     
     void Start()
     {
         currentHealth = maxHealth;
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
+        encounterController = FindObjectOfType<EncounterController>();
     }
     
     void Update()
@@ -95,7 +97,6 @@ public class Enemy : MonoBehaviour
         isDead = true;
         
         // Notify encounter controller if one exists
-        var encounterController = FindObjectOfType<EncounterController>();
         if (encounterController != null)
         {
             encounterController.OnEnemyDefeated(this);
