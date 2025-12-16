@@ -83,18 +83,10 @@ public class PlayerController : MonoBehaviour
             StartDodge();
         }
         
-        // Ability inputs
-        if (Input.GetKeyDown(KeyCode.Mouse0)) // Light attack
+        // Ability input
+        if (Input.GetKeyDown(KeyCode.Mouse0)) // Attack
         {
             TryUseAbility(0);
-        }
-        else if (Input.GetKeyDown(KeyCode.Mouse1)) // Heavy attack
-        {
-            TryUseAbility(1);
-        }
-        else if (Input.GetKeyDown(KeyCode.Q)) // Area ability
-        {
-            TryUseAbility(2);
         }
     }
     
@@ -104,17 +96,6 @@ public class PlayerController : MonoBehaviour
         if (abilitySystem.currentState == AbilityState.Idle && !isDodging)
         {
             Vector3 targetPos = transform.position + facingDirection * 5f;
-            
-            // For ground-targeted abilities, use mouse position
-            if (abilityIndex == 2) // Area ability
-            {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(ray, out RaycastHit hit, 100f))
-                {
-                    targetPos = hit.point;
-                }
-            }
-            
             abilitySystem.TryUseAbility(abilityIndex, targetPos, facingDirection);
         }
         else if (abilitySystem.currentState == AbilityState.Recovery)

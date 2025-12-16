@@ -40,22 +40,12 @@ public class SceneSetup
         player.AddComponent<PlayerController>();
         AbilitySystem abilitySystem = player.AddComponent<AbilitySystem>();
         
-        // Load and assign abilities
+        // Load and assign ability
         var lightMelee = AssetDatabase.LoadAssetAtPath<AbilityData>("Assets/ScriptableObjects/Abilities/LightMelee.asset");
-        var heavyMelee = AssetDatabase.LoadAssetAtPath<AbilityData>("Assets/ScriptableObjects/Abilities/HeavyMelee.asset");
-        var groundSlam = AssetDatabase.LoadAssetAtPath<AbilityData>("Assets/ScriptableObjects/Abilities/GroundSlam.asset");
         
         if (lightMelee != null)
         {
             abilitySystem.abilities.Add(new AbilitySystem.AbilitySlot { ability = lightMelee });
-        }
-        if (heavyMelee != null)
-        {
-            abilitySystem.abilities.Add(new AbilitySystem.AbilitySlot { ability = heavyMelee });
-        }
-        if (groundSlam != null)
-        {
-            abilitySystem.abilities.Add(new AbilitySystem.AbilitySlot { ability = groundSlam });
         }
         
         // Create Material for player
@@ -81,11 +71,6 @@ public class SceneSetup
         Camera cam = cameraObj.AddComponent<Camera>();
         cameraObj.AddComponent<IsometricCamera>();
         
-        // Add debug display
-        DebugDisplay debugDisplay = cameraObj.AddComponent<DebugDisplay>();
-        debugDisplay.playerController = player.GetComponent<PlayerController>();
-        debugDisplay.abilitySystem = player.GetComponent<AbilitySystem>();
-        debugDisplay.playerHealth = player.GetComponent<PlayerHealth>();
         
         // Create Light
         GameObject lightObj = new GameObject("Directional Light");

@@ -1,24 +1,37 @@
-# Unity URP Template
----
-***This is a template project for Unity URP (Universal Render Pipeline) with Unity-specific git configurations.***
+# 2.5D Isometric Action Combat Demo
 
-## Getting Started
+Minimal playable demo: move, dodge, attack.
 
-This template has been configured to be used with **[Git LFS](https://git-lfs.github.com)**. So, make sure to install **Git LFS** to get the full benefit.
+## Quick Start
 
-After cloning the repo, make sure to update all packages in the project to the latest.
+1. Open project in Unity 2021.3.6f1 or compatible
+2. Open `Assets/Scenes/MainScene.unity`
+3. Menu: **Game > Setup Demo Scene**
+4. Press Play
 
-To enable pre-commit validations, put the ***pre-commit*** file into ***<your_repo>/.git/hooks*** directory. To disable it, remove the file from the directory.
+## Controls
 
-## Info
+- **WASD**: Move
+- **Space**: Dodge
+- **Left Mouse Button**: Attack
 
-The pre-commit hook script for Unity enforces the GitHub file size limit and ensures meta files stay in sync,
-as well as check that every folder & file marked to be ignored in ***.gitignore*** has an entry for its meta file to be ignored as well.
+## What You'll See
 
-## References
+- Blue capsule (Player) - moves and attacks
+- Red capsule (Enemy) - chases and attacks
+- Green ground with gray walls
+- Isometric camera view
 
-Official ***.gitignore*** for Unity: https://github.com/github/gitignore/blob/e5323759e387ba347a9d50f8b0ddd16502eb71d4/Unity.gitignore
+## Architecture
 
-Unity Github Config from NYU Game Center: https://github.com/NYUGameCenter/Unity-Git-Config
+See [ARCHITECTURE.md](ARCHITECTURE.md) for system details.
 
-Unity Forum: https://forum.unity.com/threads/life-with-unity-git-lfs-a-rant-and-a-call-for-help.653191/#post-7966920
+## Extending
+
+Create new abilities:
+1. Right-click in Project
+2. Create > Abilities > Ability Data
+3. Configure values
+4. Add to player's Ability System
+
+See `MeleeAbilityData.cs` for reference implementation.
