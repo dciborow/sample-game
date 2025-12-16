@@ -142,12 +142,6 @@ Camera follows player at fixed angle:
 - Smooth follow with lerp
 - Auto-finds player if not assigned
 
-#### PlayerUI (Component)
-Visual feedback for player state:
-- Health bar
-- Cooldown overlays for abilities
-- Dodge cooldown indicator
-
 ### Enemy System
 
 #### Enemy (Component)
@@ -482,7 +476,6 @@ Assets/
 │   ├── Player/
 │   │   ├── PlayerController.cs    # Main player control
 │   │   ├── PlayerHealth.cs        # Health management
-│   │   ├── PlayerUI.cs            # UI display
 │   │   └── IsometricCamera.cs     # Camera follow
 │   ├── Enemy/
 │   │   └── Enemy.cs               # Enemy AI and health
