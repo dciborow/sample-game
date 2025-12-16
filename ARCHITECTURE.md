@@ -116,6 +116,22 @@ Simple AI-driven enemy:
 3. Move toward player if outside attack range
 4. Attack when in range and off cooldown
 
+#### EncounterController (Component)
+Manages encounter state and completion:
+- Tracks active enemies in the encounter
+- Detects when all enemies are defeated
+- Emits UnityEvent when encounter is complete
+- Provides query API for remaining enemy count
+
+**Key Methods:**
+- `RegisterEnemy()`: Add an enemy to track
+- `OnEnemyDefeated()`: Called when enemy dies
+- `GetRemainingEnemyCount()`: Query remaining enemies
+- `IsEncounterComplete()`: Check completion state
+
+**Events:**
+- `OnEncounterComplete`: UnityEvent fired when all enemies defeated
+
 ### Utility Components
 
 #### DebugDisplay (Component)
@@ -183,6 +199,27 @@ Menu command to auto-setup demo scene:
    - Move at dodge speed
 5. When timer expires:
    - Set isDodging = false
+```
+
+### Encounter Flow
+```
+1. Scene starts:
+   - EncounterController created
+   - Enemies registered with RegisterEnemy()
+2. During gameplay:
+   - Player damages enemies
+   - Enemy health reaches 0
+   - Enemy.Die() called
+3. Enemy death:
+   - Enemy notifies EncounterController.OnEnemyDefeated()
+   - EncounterController removes enemy from tracking
+4. When last enemy defeated:
+   - EncounterController detects activeEnemies.Count == 0
+   - Calls CompleteEncounter()
+   - Invokes OnEncounterComplete event
+5. Game flow responds:
+   - Event listeners react (e.g., show victory, load next level)
+   - No coupling to combat implementation details
 ```
 
 ## Performance Considerations
@@ -350,6 +387,7 @@ Assets/
 │   │   ├── MeleeAbilityData.cs    # Melee attack type
 │   │   ├── AreaAbilityData.cs     # AoE attack type
 │   │   └── AreaIndicator.cs       # Visual indicator
+│   ├── EncounterController.cs     # Encounter state manager
 │   ├── Player/
 │   │   ├── PlayerController.cs    # Main player control
 │   │   ├── PlayerHealth.cs        # Health management

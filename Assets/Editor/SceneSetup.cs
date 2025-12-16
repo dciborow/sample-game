@@ -97,6 +97,7 @@ public class SceneSetup
         debugDisplay.playerController = player.GetComponent<PlayerController>();
         debugDisplay.abilitySystem = player.GetComponent<AbilitySystem>();
         debugDisplay.playerHealth = player.GetComponent<PlayerHealth>();
+        debugDisplay.encounterController = encounterController;
         
         // Create Light
         GameObject lightObj = new GameObject("Directional Light");
