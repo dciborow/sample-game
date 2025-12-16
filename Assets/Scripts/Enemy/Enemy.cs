@@ -93,6 +93,14 @@ public class Enemy : MonoBehaviour
     private void Die()
     {
         isDead = true;
+        
+        // Notify encounter controller if one exists
+        var encounterController = FindObjectOfType<EncounterController>();
+        if (encounterController != null)
+        {
+            encounterController.OnEnemyDefeated(this);
+        }
+        
         // Simple death - destroy after delay
         Destroy(gameObject, 2f);
     }
