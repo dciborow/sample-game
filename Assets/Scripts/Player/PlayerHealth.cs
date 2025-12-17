@@ -16,7 +16,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     
     public void TakeDamage(int amount, Vector3 hitPoint)
     {
-        currentHealth -= amount;
+        currentHealth -= (float)amount;
         
         if (currentHealth <= 0)
         {

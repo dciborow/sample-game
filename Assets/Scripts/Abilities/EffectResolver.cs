@@ -122,7 +122,7 @@ public class EffectResolver : MonoBehaviour
         var damageable = target.GetComponent<IDamageable>();
         if (damageable != null)
         {
-            damageable.TakeDamage((int)damage, target.transform.position);
+            damageable.TakeDamage(Mathf.RoundToInt(damage), target.transform.position);
         }
         
         // Could extend to handle other effect types:
