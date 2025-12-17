@@ -114,18 +114,18 @@ public class EffectResolver : MonoBehaviour
     
     private void ApplyEffectToTarget(GameObject target, GameObject source, float damage)
     {
-        // Apply damage to enemies if source is player
-        if (source.CompareTag("Player") && target.CompareTag("Enemy"))
+        // Skip applying damage to the source itself
+        if (target == source)
+            return;
+        
+        // Apply damage through the IDamageable contract
+        var damageable = target.GetComponent<IDamageable>();
+        if (damageable != null)
         {
-            var damageable = target.GetComponent<IDamageable>();
-            if (damageable != null)
-            {
-                damageable.TakeDamage(damage);
-            }
+            damageable.TakeDamage((int)damage, target.transform.position);
         }
         
         // Could extend to handle other effect types:
-        // - Player taking damage from enemy effects
         // - Healing effects
         // - Status effects
         // - Knockback
