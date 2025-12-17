@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using System.Linq;
 
 /// <summary>
 /// Helper script to set up the Fight Test scene programmatically
@@ -26,8 +27,8 @@ public class FightTestSceneSetup
             {
                 continue;
             }
-            // Keep Global Volume for post-processing
-            if (obj.name == "Global Volume")
+            // Keep Global Volume for post-processing (check for Volume component)
+            if (obj.GetComponent<UnityEngine.Rendering.Volume>() != null)
             {
                 continue;
             }
@@ -145,7 +146,7 @@ public class FightTestSceneSetup
         
         // Create or find Directional Light
         Light[] lights = Object.FindObjectsOfType<Light>();
-        bool hasDirectionalLight = System.Array.Exists(lights, l => l.type == LightType.Directional);
+        bool hasDirectionalLight = lights.Any(l => l.type == LightType.Directional);
         
         if (!hasDirectionalLight)
         {
