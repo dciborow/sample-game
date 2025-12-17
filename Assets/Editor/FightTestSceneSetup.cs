@@ -8,6 +8,12 @@ using UnityEditor;
 /// </summary>
 public class FightTestSceneSetup
 {
+    // Configuration constants
+    private const float ENEMY_MAX_HEALTH = 50f;
+    private const float ENEMY_DETECTION_RANGE = 20f;
+    private const float ENEMY_ATTACK_RANGE = 2f;
+    private const float ENEMY_MOVE_SPEED = 2f;
+    
     [MenuItem("Game/Setup Fight Test Scene")]
     public static void SetupFightTestScene()
     {
@@ -15,10 +21,12 @@ public class FightTestSceneSetup
         GameObject[] allObjects = GameObject.FindObjectsOfType<GameObject>();
         foreach (GameObject obj in allObjects)
         {
-            if (obj.name != "Main Camera")
+            // Keep the main camera if it exists
+            if (obj.GetComponent<Camera>() != null && obj.CompareTag("MainCamera"))
             {
-                GameObject.DestroyImmediate(obj);
+                continue;
             }
+            GameObject.DestroyImmediate(obj);
         }
         
         // Create Ground
@@ -60,13 +68,27 @@ public class FightTestSceneSetup
         {
             abilitySystem.abilities.Add(new AbilitySystem.AbilitySlot { ability = lightMelee });
         }
+        else
+        {
+            Debug.LogWarning("LightMelee ability asset not found at Assets/ScriptableObjects/Abilities/LightMelee.asset");
+        }
+        
         if (heavyMelee != null)
         {
             abilitySystem.abilities.Add(new AbilitySystem.AbilitySlot { ability = heavyMelee });
         }
+        else
+        {
+            Debug.LogWarning("HeavyMelee ability asset not found at Assets/ScriptableObjects/Abilities/HeavyMelee.asset");
+        }
+        
         if (groundSlam != null)
         {
             abilitySystem.abilities.Add(new AbilitySystem.AbilitySlot { ability = groundSlam });
+        }
+        else
+        {
+            Debug.LogWarning("GroundSlam ability asset not found at Assets/ScriptableObjects/Abilities/GroundSlam.asset");
         }
         
         // Create Material for player
@@ -81,11 +103,11 @@ public class FightTestSceneSetup
         enemy.transform.position = new Vector3(5, 1, 0);
         Enemy enemyComponent = enemy.AddComponent<Enemy>();
         
-        // Configure enemy for test (optional adjustments)
-        enemyComponent.maxHealth = 50f;
-        enemyComponent.detectionRange = 20f;
-        enemyComponent.attackRange = 2f;
-        enemyComponent.moveSpeed = 2f;
+        // Configure enemy for test using constants
+        enemyComponent.maxHealth = ENEMY_MAX_HEALTH;
+        enemyComponent.detectionRange = ENEMY_DETECTION_RANGE;
+        enemyComponent.attackRange = ENEMY_ATTACK_RANGE;
+        enemyComponent.moveSpeed = ENEMY_MOVE_SPEED;
         
         // Create Material for enemy
         Material enemyMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
