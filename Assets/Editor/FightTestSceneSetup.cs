@@ -19,7 +19,7 @@ public class FightTestSceneSetup
     public static void SetupFightTestScene()
     {
         // Clear existing scene objects except Main Camera, Global Volume, and Directional Light
-        GameObject[] allObjects = FindObjectsOfType<GameObject>();
+        GameObject[] allObjects = Object.FindObjectsOfType<GameObject>();
         foreach (GameObject obj in allObjects)
         {
             // Keep the main camera if it exists
@@ -38,7 +38,7 @@ public class FightTestSceneSetup
             {
                 continue;
             }
-            DestroyImmediate(obj);
+            Object.DestroyImmediate(obj);
         }
         
         // Create Ground
@@ -60,7 +60,7 @@ public class FightTestSceneSetup
         player.transform.position = new Vector3(0, 1, 0);
         
         // Remove default collider and add CharacterController
-        DestroyImmediate(player.GetComponent<CapsuleCollider>());
+        Object.DestroyImmediate(player.GetComponent<CapsuleCollider>());
         CharacterController cc = player.AddComponent<CharacterController>();
         cc.center = Vector3.zero;
         cc.radius = 0.5f;
@@ -151,7 +151,7 @@ public class FightTestSceneSetup
         isoCam.target = player.transform;
         
         // Ensure Directional Light exists (should be preserved from scene)
-        Light[] lights = FindObjectsOfType<Light>();
+        Light[] lights = Object.FindObjectsOfType<Light>();
         bool hasDirectionalLight = lights.Any(l => l.type == LightType.Directional);
         
         if (!hasDirectionalLight)
