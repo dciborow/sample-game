@@ -1,3 +1,5 @@
+using UnityEngine;
+
 /// <summary>
 /// Contract between "things that deal damage" and "things that receive damage"
 /// Decouples damage sources from damage receivers
@@ -7,6 +9,7 @@ public interface IDamageable
     /// <summary>
     /// Apply damage to this entity
     /// </summary>
-    /// <param name="damage">Amount of damage to apply</param>
-    void TakeDamage(float damage);
+    /// <param name="amount">Amount of damage to apply</param>
+    /// <param name="hitPoint">World position where the damage occurred</param>
+    void TakeDamage(int amount, Vector3 hitPoint);
 }

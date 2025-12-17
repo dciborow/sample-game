@@ -99,16 +99,16 @@ public class Enemy : MonoBehaviour, IDamageable
         var damageable = player.GetComponent<IDamageable>();
         if (damageable != null)
         {
-            damageable.TakeDamage(attackDamage);
+            damageable.TakeDamage(Mathf.RoundToInt(attackDamage), player.position);
         }
     }
     
-    public void TakeDamage(float damage)
+    public void TakeDamage(int amount, Vector3 hitPoint)
     {
         if (isDead)
             return;
             
-        currentHealth -= damage;
+        currentHealth -= (float)amount;
         
         if (currentHealth <= 0)
         {

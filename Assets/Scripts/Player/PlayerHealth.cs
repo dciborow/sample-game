@@ -14,9 +14,9 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         currentHealth = maxHealth;
     }
     
-    public void TakeDamage(float damage)
+    public void TakeDamage(int amount, Vector3 hitPoint)
     {
-        currentHealth -= damage;
+        currentHealth -= (float)amount;
         
         if (currentHealth <= 0)
         {
