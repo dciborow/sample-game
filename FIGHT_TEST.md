@@ -22,23 +22,16 @@ This scene is specifically designed to:
 
 ## Setup Instructions
 
-### Option 1: Using the Editor Menu (Recommended)
+### Setup Steps
 
 1. Open the project in Unity Editor
 2. Open the scene: `Assets/Scenes/FightTest.unity`
 3. From the menu bar, select: **Game > Setup Fight Test Scene**
+   - This will add the Player, Enemy, and Ground to the scene
+   - The scene starts with only Camera, Light, and Global Volume
 4. Press **Play** ▶️
 
-### Option 2: Manual Setup
-
-1. Open `Assets/Scenes/FightTest.unity` in Unity Editor
-2. The scene should already contain:
-   - Ground plane
-   - Player (blue capsule)
-   - Enemy (red capsule)
-   - Camera with IsometricCamera component
-   - Directional Light
-3. Press **Play** ▶️
+**Note**: The scene must be set up using the editor menu item before playing. The scene file itself contains only the rendering infrastructure by design, allowing easy reset and reconfiguration.
 
 ## Controls
 

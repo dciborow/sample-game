@@ -18,10 +18,16 @@ public class FightTestSceneSetup
     [MenuItem("Game/Setup Fight Test Scene")]
     public static void SetupFightTestScene()
     {
-        // Clear existing scene objects except Main Camera and Global Volume
-        GameObject[] allObjects = Object.FindObjectsOfType<GameObject>();
+        // Clear existing scene objects except Main Camera, Global Volume, and Directional Light
+        GameObject[] allObjects = FindObjectsOfType<GameObject>();
         foreach (GameObject obj in allObjects)
         {
+            // Skip null objects (may have been destroyed as children)
+            if (obj == null)
+            {
+                continue;
+            }
+            
             // Keep the main camera if it exists
             if (obj.GetComponent<Camera>() != null && obj.CompareTag("MainCamera"))
             {
@@ -32,7 +38,13 @@ public class FightTestSceneSetup
             {
                 continue;
             }
-            Object.DestroyImmediate(obj);
+            // Keep Directional Light to preserve its configuration
+            Light light = obj.GetComponent<Light>();
+            if (light != null && light.type == LightType.Directional)
+            {
+                continue;
+            }
+            DestroyImmediate(obj);
         }
         
         // Create Ground
@@ -54,7 +66,7 @@ public class FightTestSceneSetup
         player.transform.position = new Vector3(0, 1, 0);
         
         // Remove default collider and add CharacterController
-        Object.DestroyImmediate(player.GetComponent<CapsuleCollider>());
+        DestroyImmediate(player.GetComponent<CapsuleCollider>());
         CharacterController cc = player.AddComponent<CharacterController>();
         cc.center = Vector3.zero;
         cc.radius = 0.5f;
@@ -144,8 +156,8 @@ public class FightTestSceneSetup
         }
         isoCam.target = player.transform;
         
-        // Create or find Directional Light
-        Light[] lights = Object.FindObjectsOfType<Light>();
+        // Ensure Directional Light exists (should be preserved from scene)
+        Light[] lights = FindObjectsOfType<Light>();
         bool hasDirectionalLight = lights.Any(l => l.type == LightType.Directional);
         
         if (!hasDirectionalLight)
