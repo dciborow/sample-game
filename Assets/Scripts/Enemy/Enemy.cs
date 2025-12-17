@@ -120,6 +120,9 @@ public class Enemy : MonoBehaviour
             
         isDead = true;
         
+        // Emit death event for external systems
+        onDeath?.Invoke();
+        
         // Notify encounter controller if one exists
         if (encounterController != null)
         {

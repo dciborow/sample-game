@@ -47,10 +47,17 @@ If you prefer to set up manually:
   - Assign the three ability ScriptableObjects from Assets/ScriptableObjects/Abilities/
 
 #### 3. Create Enemy
+**Option A: Use the Prefab (Recommended)**
+- Drag the Enemy prefab from Assets/Prefabs/Enemy.prefab into the scene
+- Position it at desired location (e.g., 5, 1, 5)
+- The prefab comes pre-configured with health and death functionality
+
+**Option B: Manual Creation**
 - Create a Capsule (GameObject > 3D Object > Capsule)
 - Name it "Enemy" and tag as "Enemy"
 - Position at (5, 1, 5)
 - Add Enemy component
+- Configure Enemy settings (see ENEMY_PREFAB_USAGE.md for details)
 
 #### 4. Create Camera
 - Create an empty GameObject
