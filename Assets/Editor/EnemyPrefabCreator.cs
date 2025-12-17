@@ -22,7 +22,14 @@ public class EnemyPrefabCreator
         enemyObject.name = "Enemy";
         
         // Set the tag (ensure "Enemy" tag exists in project)
-        enemyObject.tag = "Enemy";
+        try
+        {
+            enemyObject.tag = "Enemy";
+        }
+        catch (UnityException)
+        {
+            Debug.LogWarning("'Enemy' tag does not exist. Please add it in Project Settings > Tags and Layers, then run this script again.");
+        }
         
         // The capsule already has a CapsuleCollider, which satisfies the requirement
         CapsuleCollider collider = enemyObject.GetComponent<CapsuleCollider>();
@@ -45,9 +52,24 @@ public class EnemyPrefabCreator
         enemyComponent.isBoss = false;
         
         // Create a simple material for the enemy
-        Material enemyMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        enemyMat.color = Color.red;
-        enemyObject.GetComponent<MeshRenderer>().material = enemyMat;
+        Shader shader = Shader.Find("Universal Render Pipeline/Lit");
+        if (shader == null)
+        {
+            // Fallback to Standard shader if URP is not available
+            shader = Shader.Find("Standard");
+            Debug.LogWarning("URP Lit shader not found. Using Standard shader as fallback.");
+        }
+        
+        if (shader != null)
+        {
+            Material enemyMat = new Material(shader);
+            enemyMat.color = Color.red;
+            enemyObject.GetComponent<MeshRenderer>().material = enemyMat;
+        }
+        else
+        {
+            Debug.LogWarning("Could not find suitable shader. Using default material.");
+        }
         
         // Save as prefab
         string prefabFilePath = prefabPath + "/Enemy.prefab";
