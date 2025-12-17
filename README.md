@@ -10,6 +10,12 @@ After cloning the repo, make sure to update all packages in the project to the l
 
 To enable pre-commit validations, put the ***pre-commit*** file into ***<your_repo>/.git/hooks*** directory. To disable it, remove the file from the directory.
 
+### Quick Start
+
+For a quick combat test, see the **[Fight Test Scene](FIGHT_TEST.md)** - a minimal scene to validate Player → Enemy → Death mechanics.
+
+For a complete game experience with UI and flow, see the **[Quick Start Guide](QUICKSTART.md)**.
+
 ## Info
 
 The pre-commit hook script for Unity enforces the GitHub file size limit and ensures meta files stay in sync,
