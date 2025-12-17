@@ -120,7 +120,7 @@ public class EffectResolver : MonoBehaviour
             var damageable = target.GetComponent<IDamageable>();
             if (damageable != null)
             {
-                damageable.TakeDamage(baseDamage);
+                damageable.TakeDamage(damage);
             }
         }
         
