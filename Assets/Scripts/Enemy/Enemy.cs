@@ -11,9 +11,6 @@ public class Enemy : MonoBehaviour, IDamageable
     public float maxHealth = 50f;
     private float currentHealth;
     
-    [Header("Boss Settings")]
-    public bool isBoss = false;
-    
     [Header("AI")]
     public float detectionRange = 10f;
     public float attackRange = 2f;
@@ -151,12 +148,6 @@ public class Enemy : MonoBehaviour, IDamageable
         if (encounterController != null)
         {
             encounterController.OnEnemyDefeated(this);
-        }
-
-        // Trigger boss defeated event if this is a boss
-        if (isBoss)
-        {
-            GameEvents.TriggerBossDefeated();
         }
         
         // Simple death - destroy after delay for cleanup
