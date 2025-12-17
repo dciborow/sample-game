@@ -29,7 +29,7 @@ public class SceneSetup
         player.transform.position = new Vector3(0, 1, 0);
         
         // Remove default collider and add CharacterController
-        DestroyImmediate(player.GetComponent<CapsuleCollider>());
+        // DestroyImmediate(player.GetComponent<CapsuleCollider>());
         CharacterController cc = player.AddComponent<CharacterController>();
         cc.center = Vector3.zero;
         cc.radius = 0.5f;
