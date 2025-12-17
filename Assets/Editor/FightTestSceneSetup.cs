@@ -22,12 +22,6 @@ public class FightTestSceneSetup
         GameObject[] allObjects = FindObjectsOfType<GameObject>();
         foreach (GameObject obj in allObjects)
         {
-            // Skip null objects (may have been destroyed as children)
-            if (obj == null)
-            {
-                continue;
-            }
-            
             // Keep the main camera if it exists
             if (obj.GetComponent<Camera>() != null && obj.CompareTag("MainCamera"))
             {
@@ -38,7 +32,7 @@ public class FightTestSceneSetup
             {
                 continue;
             }
-            // Keep Directional Light to preserve its configuration
+            // Keep Directional Light to preserve its configuration (including UniversalAdditionalLightData)
             Light light = obj.GetComponent<Light>();
             if (light != null && light.type == LightType.Directional)
             {
