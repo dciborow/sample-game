@@ -1,0 +1,146 @@
+using UnityEngine;
+using UnityEditor;
+
+/// <summary>
+/// Helper script to set up the Fight Test scene programmatically
+/// Creates a minimal combat test environment with Player, Enemy, and Camera
+/// No UI, no flow, no progression - just combat testing
+/// </summary>
+public class FightTestSceneSetup
+{
+    [MenuItem("Game/Setup Fight Test Scene")]
+    public static void SetupFightTestScene()
+    {
+        // Clear existing scene objects except camera
+        GameObject[] allObjects = GameObject.FindObjectsOfType<GameObject>();
+        foreach (GameObject obj in allObjects)
+        {
+            if (obj.name != "Main Camera")
+            {
+                GameObject.DestroyImmediate(obj);
+            }
+        }
+        
+        // Create Ground
+        GameObject ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        ground.name = "Ground";
+        ground.transform.position = Vector3.zero;
+        ground.transform.localScale = new Vector3(5, 1, 5);
+        ground.tag = "Ground";
+        
+        // Create Material for ground
+        Material groundMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+        groundMat.color = new Color(0.3f, 0.5f, 0.3f);
+        ground.GetComponent<MeshRenderer>().material = groundMat;
+        
+        // Create Player
+        GameObject player = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        player.name = "Player";
+        player.tag = "Player";
+        player.transform.position = new Vector3(0, 1, 0);
+        
+        // Remove default collider and add CharacterController
+        Object.DestroyImmediate(player.GetComponent<CapsuleCollider>());
+        CharacterController cc = player.AddComponent<CharacterController>();
+        cc.center = Vector3.zero;
+        cc.radius = 0.5f;
+        cc.height = 2f;
+        
+        // Add player components
+        player.AddComponent<PlayerHealth>();
+        player.AddComponent<PlayerController>();
+        AbilitySystem abilitySystem = player.AddComponent<AbilitySystem>();
+        
+        // Load and assign abilities
+        var lightMelee = AssetDatabase.LoadAssetAtPath<AbilityData>("Assets/ScriptableObjects/Abilities/LightMelee.asset");
+        var heavyMelee = AssetDatabase.LoadAssetAtPath<AbilityData>("Assets/ScriptableObjects/Abilities/HeavyMelee.asset");
+        var groundSlam = AssetDatabase.LoadAssetAtPath<AbilityData>("Assets/ScriptableObjects/Abilities/GroundSlam.asset");
+        
+        if (lightMelee != null)
+        {
+            abilitySystem.abilities.Add(new AbilitySystem.AbilitySlot { ability = lightMelee });
+        }
+        if (heavyMelee != null)
+        {
+            abilitySystem.abilities.Add(new AbilitySystem.AbilitySlot { ability = heavyMelee });
+        }
+        if (groundSlam != null)
+        {
+            abilitySystem.abilities.Add(new AbilitySystem.AbilitySlot { ability = groundSlam });
+        }
+        
+        // Create Material for player
+        Material playerMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+        playerMat.color = Color.blue;
+        player.GetComponent<MeshRenderer>().material = playerMat;
+        
+        // Create Enemy
+        GameObject enemy = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        enemy.name = "Enemy";
+        enemy.tag = "Enemy";
+        enemy.transform.position = new Vector3(5, 1, 0);
+        Enemy enemyComponent = enemy.AddComponent<Enemy>();
+        
+        // Configure enemy for test (optional adjustments)
+        enemyComponent.maxHealth = 50f;
+        enemyComponent.detectionRange = 20f;
+        enemyComponent.attackRange = 2f;
+        enemyComponent.moveSpeed = 2f;
+        
+        // Create Material for enemy
+        Material enemyMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+        enemyMat.color = Color.red;
+        enemy.GetComponent<MeshRenderer>().material = enemyMat;
+        
+        // Setup Camera - find existing or create new
+        Camera mainCamera = Camera.main;
+        GameObject cameraObj;
+        
+        if (mainCamera != null)
+        {
+            cameraObj = mainCamera.gameObject;
+        }
+        else
+        {
+            cameraObj = new GameObject("Main Camera");
+            cameraObj.tag = "MainCamera";
+            cameraObj.AddComponent<Camera>();
+            cameraObj.AddComponent<AudioListener>();
+        }
+        
+        // Add or get IsometricCamera component
+        IsometricCamera isoCam = cameraObj.GetComponent<IsometricCamera>();
+        if (isoCam == null)
+        {
+            isoCam = cameraObj.AddComponent<IsometricCamera>();
+        }
+        isoCam.target = player.transform;
+        
+        // Create or find Directional Light
+        Light[] lights = Object.FindObjectsOfType<Light>();
+        bool hasDirectionalLight = false;
+        foreach (Light l in lights)
+        {
+            if (l.type == LightType.Directional)
+            {
+                hasDirectionalLight = true;
+                break;
+            }
+        }
+        
+        if (!hasDirectionalLight)
+        {
+            GameObject lightObj = new GameObject("Directional Light");
+            Light light = lightObj.AddComponent<Light>();
+            light.type = LightType.Directional;
+            light.intensity = 2f;
+            lightObj.transform.rotation = Quaternion.Euler(50, -30, 0);
+        }
+        
+        Debug.Log("Fight Test scene setup complete! Press Play to test Player → Enemy → Death");
+        
+        // Mark scene as dirty
+        UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(
+            UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
+    }
+}
