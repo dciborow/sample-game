@@ -8,7 +8,6 @@ using System.Collections.Generic;
 public class EffectResolver : MonoBehaviour
 {
     [Header("Effect Interpretation")]
-    public float baseDamage = 10f;
     public LayerMask targetLayers;
     
     private static EffectResolver instance;
