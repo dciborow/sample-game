@@ -1,7 +1,12 @@
 # Enemy Death Event System
 
 ## Overview
-The Enemy class now emits a death event (`onDeath`) instead of handling death consequences directly. This makes enemy death a **contract** that external systems can respond to, rather than hardcoded **behavior**.
+The Enemy class now emits death events instead of handling death consequences directly. This makes enemy death a **contract** that external systems can respond to, rather than hardcoded **behavior**.
+
+### Two Death Event Patterns
+
+1. **Instance Event (`onDeath`)**: UnityEvent on each Enemy instance for direct listeners
+2. **Global Event (`GameEvents.OnEnemyKilled`)**: Static event for systems without direct enemy references
 
 ## Key Changes
 
@@ -9,7 +14,8 @@ The Enemy class now emits a death event (`onDeath`) instead of handling death co
 - Receives damage via `TakeDamage(float damage)`
 - Tracks its own health
 - Dies when health reaches zero
-- **Emits `onDeath` event** when death occurs
+- **Emits `onDeath` UnityEvent** when death occurs
+- **Fires `GameEvents.OnEnemyKilled` static event** when death occurs
 - Stops AI behavior when dead (via `IsDead` property)
 
 ### What Enemy Does NOT Do
@@ -20,7 +26,36 @@ The Enemy class now emits a death event (`onDeath`) instead of handling death co
 
 ## Usage Examples
 
-### 1. Basic Death Handling (via EnemyManager)
+### 1. Global Event Handling (No Direct Enemy Reference Required)
+```csharp
+public class GlobalEnemyTracker : MonoBehaviour
+{
+    private int totalKills = 0;
+    
+    void OnEnable()
+    {
+        // Subscribe to global enemy killed event
+        GameEvents.OnEnemyKilled += OnEnemyKilled;
+    }
+    
+    void OnDisable()
+    {
+        // Unsubscribe to prevent memory leaks
+        GameEvents.OnEnemyKilled -= OnEnemyKilled;
+    }
+    
+    private void OnEnemyKilled(Enemy enemy)
+    {
+        totalKills++;
+        Debug.Log($"Total kills: {totalKills}. {enemy.name} was defeated!");
+        
+        // Could update UI, grant achievements, track stats, etc.
+        // No need to find or reference enemies beforehand
+    }
+}
+```
+
+### 2. Basic Death Handling (via EnemyManager)
 ```csharp
 // Register enemy with a manager
 EnemyManager manager = GetComponent<EnemyManager>();
@@ -149,6 +184,24 @@ public class LevelManager : MonoBehaviour
     }
 }
 ```
+
+## Choosing Between Event Patterns
+
+### Use `GameEvents.OnEnemyKilled` (Global Static Event) When:
+- You need to track enemy deaths without direct references to enemies
+- Implementing global systems (achievements, statistics, UI updates)
+- Working with dynamically spawned enemies
+- Building systems that should work across all scenes
+- You want automatic discovery without manual registration
+
+### Use `enemy.onDeath` (Instance Event) When:
+- You have a direct reference to a specific enemy
+- Implementing enemy-specific behavior (spawn loot at death position)
+- Working with known enemies in a scene
+- You need to handle cleanup for specific enemies
+- Building encounter-specific logic
+
+Both events fire on every enemy death, so you can use both simultaneously for different purposes.
 
 ## Benefits
 

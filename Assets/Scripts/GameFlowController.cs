@@ -150,11 +150,15 @@ public static class GameEvents
 {
     // Event delegates
     public delegate void GameEventHandler();
+    public delegate void EnemyEventHandler(Enemy enemy);
     
     // Game flow events
     public static event GameEventHandler OnPlayerDeath;
     public static event GameEventHandler OnAdventureComplete;
     public static event GameEventHandler OnBossDefeated;
+    
+    // Enemy events
+    public static event EnemyEventHandler OnEnemyKilled;
     
     // Event trigger methods
     public static void TriggerPlayerDeath()
@@ -173,5 +177,11 @@ public static class GameEvents
     {
         Debug.Log("[GameEvents] Boss defeated triggered");
         OnBossDefeated?.Invoke();
+    }
+    
+    public static void TriggerEnemyKilled(Enemy enemy)
+    {
+        Debug.Log($"[GameEvents] Enemy killed: {enemy?.name}");
+        OnEnemyKilled?.Invoke(enemy);
     }
 }

@@ -147,6 +147,9 @@ public class Enemy : MonoBehaviour, IDamageable
         // Emit death event for external systems
         onDeath?.Invoke();
         
+        // Fire global enemy killed event
+        GameEvents.TriggerEnemyKilled(this);
+        
         // Notify encounter controller if one exists
         if (encounterController != null)
         {
