@@ -120,6 +120,16 @@ public class Enemy : MonoBehaviour, IDamageable
             
         isDead = true;
         
+        // Immediate visual feedback - disable renderer to make death unambiguous
+        var renderer = GetComponentInChildren<Renderer>();
+        if (renderer != null)
+        {
+            renderer.enabled = false;
+        }
+        
+        // Log for confirmation
+        Debug.Log($"Enemy {gameObject.name} died at position {transform.position}");
+        
         // Emit death event for external systems
         onDeath?.Invoke();
         
@@ -135,7 +145,7 @@ public class Enemy : MonoBehaviour, IDamageable
             GameEvents.TriggerBossDefeated();
         }
         
-        // Simple death - destroy after delay
+        // Simple death - destroy after delay for cleanup
         Destroy(gameObject, 2f);
     }
     
