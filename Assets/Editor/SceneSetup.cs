@@ -76,9 +76,17 @@ public class SceneSetup
         {
             // Instantiate the prefab
             enemy = PrefabUtility.InstantiatePrefab(enemyPrefab) as GameObject;
-            enemy.transform.position = new Vector3(5, 1, 5);
-            enemyComponent = enemy.GetComponent<Enemy>();
-            Debug.Log("Enemy created from prefab");
+            
+            if (enemy != null)
+            {
+                enemy.transform.position = new Vector3(5, 1, 5);
+                enemyComponent = enemy.GetComponent<Enemy>();
+                Debug.Log("Enemy created from prefab");
+            }
+            else
+            {
+                Debug.LogError("Failed to instantiate Enemy prefab. The prefab may be corrupted.");
+            }
         }
         else
         {
