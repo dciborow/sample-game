@@ -17,8 +17,8 @@ public class FightTestSceneSetup
     [MenuItem("Game/Setup Fight Test Scene")]
     public static void SetupFightTestScene()
     {
-        // Clear existing scene objects except camera
-        GameObject[] allObjects = GameObject.FindObjectsOfType<GameObject>();
+        // Clear existing scene objects except Main Camera and Global Volume
+        GameObject[] allObjects = Object.FindObjectsOfType<GameObject>();
         foreach (GameObject obj in allObjects)
         {
             // Keep the main camera if it exists
@@ -26,7 +26,12 @@ public class FightTestSceneSetup
             {
                 continue;
             }
-            GameObject.DestroyImmediate(obj);
+            // Keep Global Volume for post-processing
+            if (obj.name == "Global Volume")
+            {
+                continue;
+            }
+            Object.DestroyImmediate(obj);
         }
         
         // Create Ground
@@ -140,15 +145,7 @@ public class FightTestSceneSetup
         
         // Create or find Directional Light
         Light[] lights = Object.FindObjectsOfType<Light>();
-        bool hasDirectionalLight = false;
-        foreach (Light l in lights)
-        {
-            if (l.type == LightType.Directional)
-            {
-                hasDirectionalLight = true;
-                break;
-            }
-        }
+        bool hasDirectionalLight = System.Array.Exists(lights, l => l.type == LightType.Directional);
         
         if (!hasDirectionalLight)
         {
