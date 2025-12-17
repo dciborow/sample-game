@@ -115,7 +115,7 @@ public class EffectResolver : MonoBehaviour
     private void ApplyEffectToTarget(GameObject target, GameObject source, float damage)
     {
         // Skip applying damage to the source itself
-        if (target == source)
+        if (ReferenceEquals(target, source))
             return;
         
         // Apply damage through the IDamageable contract
