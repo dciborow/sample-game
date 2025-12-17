@@ -15,6 +15,9 @@ public class HitboxEffect : EffectData
     [Header("Hitbox Timing")]
     public float duration = 0.1f;
     
+    [Header("Damage")]
+    public float damage = 10f;
+    
     [Header("Visual (Optional)")]
     public GameObject visualPrefab;
     
@@ -34,6 +37,7 @@ public class HitboxEffect : EffectData
         hitboxComp.direction = context.direction;
         hitboxComp.source = context.source;
         hitboxComp.lifetime = duration;
+        hitboxComp.damage = damage;
         
         // Optional visual
         if (visualPrefab != null)
@@ -63,6 +67,7 @@ public class Hitbox : MonoBehaviour
     public Vector3 direction;
     public GameObject source;
     public float lifetime;
+    public float damage;
     
     private float elapsedTime;
     

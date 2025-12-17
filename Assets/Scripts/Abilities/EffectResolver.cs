@@ -8,7 +8,6 @@ using System.Collections.Generic;
 public class EffectResolver : MonoBehaviour
 {
     [Header("Effect Interpretation")]
-    public float baseDamage = 10f;
     public LayerMask targetLayers;
     
     private static EffectResolver instance;
@@ -92,8 +91,8 @@ public class EffectResolver : MonoBehaviour
                     continue;
             }
             
-            // Apply effect to target
-            ApplyEffectToTarget(hit.gameObject, hitbox.source);
+            // Apply effect to target with hitbox-specific damage
+            ApplyEffectToTarget(hit.gameObject, hitbox.source, hitbox.damage);
         }
     }
     
@@ -108,12 +107,12 @@ public class EffectResolver : MonoBehaviour
             if (hit.gameObject == area.source)
                 continue;
             
-            // Apply effect to target
-            ApplyEffectToTarget(hit.gameObject, area.source);
+            // Apply effect to target with area-specific damage
+            ApplyEffectToTarget(hit.gameObject, area.source, area.damage);
         }
     }
     
-    private void ApplyEffectToTarget(GameObject target, GameObject source)
+    private void ApplyEffectToTarget(GameObject target, GameObject source, float damage)
     {
         // Apply damage to enemies if source is player
         if (source.CompareTag("Player") && target.CompareTag("Enemy"))
@@ -121,7 +120,7 @@ public class EffectResolver : MonoBehaviour
             var enemy = target.GetComponent<Enemy>();
             if (enemy != null)
             {
-                enemy.TakeDamage(baseDamage);
+                enemy.TakeDamage(damage);
             }
         }
         
