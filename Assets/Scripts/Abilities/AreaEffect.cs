@@ -12,6 +12,9 @@ public class AreaEffect : EffectData
     [Header("Area Timing")]
     public float duration = 0.1f;
     
+    [Header("Damage")]
+    public float damage = 10f;
+    
     [Header("Visual (Optional)")]
     public GameObject visualPrefab;
     
@@ -26,6 +29,7 @@ public class AreaEffect : EffectData
         areaComp.radius = areaRadius;
         areaComp.source = context.source;
         areaComp.lifetime = duration;
+        areaComp.damage = damage;
         
         // Optional visual
         if (visualPrefab != null)
@@ -44,6 +48,7 @@ public class AreaMarker : MonoBehaviour
     public float radius;
     public GameObject source;
     public float lifetime;
+    public float damage;
     
     private float elapsedTime;
     
