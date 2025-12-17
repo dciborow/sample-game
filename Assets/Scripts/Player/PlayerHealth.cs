@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Manages player health
 /// </summary>
-public class PlayerHealth : MonoBehaviour
+public class PlayerHealth : MonoBehaviour, IDamageable
 {
     [Header("Health")]
     public float maxHealth = 100f;

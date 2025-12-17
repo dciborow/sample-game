@@ -118,10 +118,10 @@ public class EffectResolver : MonoBehaviour
         // Apply damage to enemies if source is player
         if (source.CompareTag("Player") && target.CompareTag("Enemy"))
         {
-            var enemy = target.GetComponent<Enemy>();
-            if (enemy != null)
+            var damageable = target.GetComponent<IDamageable>();
+            if (damageable != null)
             {
-                enemy.TakeDamage(baseDamage);
+                damageable.TakeDamage(baseDamage);
             }
         }
         

@@ -5,7 +5,7 @@ using UnityEngine.Events;
 /// Simple enemy with health and basic AI
 /// Emits death event for external systems to handle
 /// </summary>
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, IDamageable
 {
     [Header("Health")]
     public float maxHealth = 50f;
@@ -91,11 +91,11 @@ public class Enemy : MonoBehaviour
     {
         attackCooldownTimer = attackCooldown;
         
-        // Simple damage to player (would need PlayerHealth component)
-        var playerHealth = player.GetComponent<PlayerHealth>();
-        if (playerHealth != null)
+        // Apply damage through the IDamageable interface
+        var damageable = player.GetComponent<IDamageable>();
+        if (damageable != null)
         {
-            playerHealth.TakeDamage(attackDamage);
+            damageable.TakeDamage(attackDamage);
         }
     }
     
