@@ -129,10 +129,7 @@ public class Enemy : MonoBehaviour, IDamageable
         {
             foreach (var renderer in enemyRenderers)
             {
-                if (renderer != null)
-                {
-                    renderer.enabled = false;
-                }
+                renderer.enabled = false;
             }
         }
         
