@@ -28,7 +28,8 @@ public class Enemy : MonoBehaviour, IDamageable
     private float attackCooldownTimer;
     private bool isDead;
     private EncounterController encounterController;
-    private Renderer enemyRenderer;
+    private Renderer[] enemyRenderers;
+    private Collider enemyCollider;
     
     /// <summary>
     /// Check if enemy is dead
@@ -39,7 +40,8 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         currentHealth = maxHealth;
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
-        enemyRenderer = GetComponentInChildren<Renderer>();
+        enemyRenderers = GetComponentsInChildren<Renderer>();
+        enemyCollider = GetComponent<Collider>();
     }
     
     /// <summary>
@@ -122,10 +124,22 @@ public class Enemy : MonoBehaviour, IDamageable
             
         isDead = true;
         
-        // Immediate visual feedback - disable renderer to make death unambiguous
-        if (enemyRenderer != null)
+        // Immediate visual feedback - disable all renderers to make death unambiguous
+        if (enemyRenderers != null)
         {
-            enemyRenderer.enabled = false;
+            foreach (var renderer in enemyRenderers)
+            {
+                if (renderer != null)
+                {
+                    renderer.enabled = false;
+                }
+            }
+        }
+        
+        // Disable collider to prevent further interactions
+        if (enemyCollider != null)
+        {
+            enemyCollider.enabled = false;
         }
         
         // Log for confirmation (debug builds only)
