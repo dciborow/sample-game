@@ -28,6 +28,8 @@ public class Enemy : MonoBehaviour, IDamageable
     private float attackCooldownTimer;
     private bool isDead;
     private EncounterController encounterController;
+    private Renderer[] enemyRenderers;
+    private Collider enemyCollider;
     
     /// <summary>
     /// Check if enemy is dead
@@ -38,6 +40,8 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         currentHealth = maxHealth;
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
+        enemyRenderers = GetComponentsInChildren<Renderer>();
+        enemyCollider = GetComponent<Collider>();
     }
     
     /// <summary>
@@ -120,6 +124,26 @@ public class Enemy : MonoBehaviour, IDamageable
             
         isDead = true;
         
+        // Immediate visual feedback - disable all renderers to make death unambiguous
+        if (enemyRenderers != null)
+        {
+            foreach (var renderer in enemyRenderers)
+            {
+                renderer.enabled = false;
+            }
+        }
+        
+        // Disable collider to prevent further interactions
+        if (enemyCollider != null)
+        {
+            enemyCollider.enabled = false;
+        }
+        
+        // Log for confirmation (debug builds only)
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        Debug.Log($"Enemy {gameObject.name} died at position {transform.position}");
+#endif
+        
         // Emit death event for external systems
         onDeath?.Invoke();
         
@@ -135,7 +159,7 @@ public class Enemy : MonoBehaviour, IDamageable
             GameEvents.TriggerBossDefeated();
         }
         
-        // Simple death - destroy after delay
+        // Simple death - destroy after delay for cleanup
         Destroy(gameObject, 2f);
     }
     
