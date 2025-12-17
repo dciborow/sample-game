@@ -20,14 +20,15 @@ cd sample-game
 
 #### 2. Setup the Demo Scene
 In Unity Editor:
-1. Open `Assets/Scenes/FightTest.unity`
-2. From the menu bar: **Game > Setup Fight Test Scene**
-3. Press **Play** ▶️
+1. Open `Assets/Scenes/MainScene.unity`
+2. From the menu bar: **Game > Setup Demo Scene**
+3. Wait for scene setup to complete (you'll see a "Demo scene setup complete!" message)
+4. Press **Play** ▶️
 
 #### 3. Start Playing!
 - **WASD**: Move around
 - **Space**: Dodge roll
-- **Left Mouse Button**: Light attack
+- **Left Mouse Button**: Quick light attack
 - **Right Mouse Button**: Heavy attack (more damage, longer wind-up)
 - **Q**: Ground Slam (aim with mouse, damages area)
 
@@ -44,6 +45,12 @@ In Unity Editor:
 - Chases and faces player
 - Attacks when in melee range
 - Has health that depletes when hit
+
+### UI (Top-Left Corner)
+- Health percentage
+- Current state (Idle, WindUp, Active, Recovery)
+- Cooldown status for dodge and all abilities
+- Control reminders
 
 ### Arena
 - Large green ground plane (50x50 units)
@@ -72,8 +79,8 @@ In Unity Editor:
 ## 🐛 Troubleshooting
 
 ### Scene is Empty
-- Make sure you ran **Game > Setup Fight Test Scene**
-- If menu item not visible, check that `Assets/Editor/FightTestSceneSetup.cs` exists
+- Make sure you ran **Game > Setup Demo Scene**
+- If menu item not visible, check that `Assets/Editor/SceneSetup.cs` exists
 
 ### Player Not Moving
 - Check that CharacterController component is attached to Player
@@ -97,16 +104,22 @@ In Unity Editor:
 
 ## 📚 Next Steps
 
+### Learn the System
+- Read `ARCHITECTURE.md` for detailed system overview
+- Read `GAME_SETUP.md` for manual setup instructions
+- Review the code in `Assets/Scripts/` folders
+
 ### Extend the Game
 1. **Add Animations**: Integrate Unity's Animator Controller
 2. **Add VFX**: Create particle effects for abilities
 3. **Add Sound**: Integrate audio clips for actions
 4. **More Enemies**: Duplicate and modify the enemy
 5. **New Abilities**: Create custom ability types
+6. **Better UI**: Replace debug display with polished UI
 
 ### Build and Share
 1. File > Build Settings
-2. Add `FightTest` scene to "Scenes in Build"
+2. Add `MainScene` to "Scenes in Build"
 3. Select platform (PC, Mac, Linux)
 4. Click "Build" and choose output folder
 5. Share the executable!
@@ -133,9 +146,9 @@ In Unity Editor:
 ## 🎨 Visual Customization
 
 ### Change Colors
-Modify materials in FightTestSceneSetup.cs or create proper materials:
+Modify materials in SceneSetup.cs or create proper materials:
 ```csharp
-// In FightTestSceneSetup.cs
+// In SceneSetup.cs
 Material playerMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
 playerMat.color = Color.blue; // Change this!
 ```
@@ -168,6 +181,7 @@ A: Not currently - this is single player only, but could be extended
 ### Resources
 - Unity Documentation: https://docs.unity3d.com/
 - URP Manual: https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@latest
+- This project's documentation in `ARCHITECTURE.md`
 
 ---
 
