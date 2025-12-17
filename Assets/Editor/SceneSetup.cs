@@ -67,20 +67,48 @@ public class SceneSetup
         GameObject managerObj = new GameObject("EnemyManager");
         EnemyManager enemyManager = managerObj.AddComponent<EnemyManager>();
         
-        // Create Enemy
-        GameObject enemy = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-        enemy.name = "Enemy";
-        enemy.tag = "Enemy";
-        enemy.transform.position = new Vector3(5, 1, 5);
-        Enemy enemyComponent = enemy.AddComponent<Enemy>();
+        // Create Enemy from prefab (instead of raw GameObject)
+        GameObject enemyPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Enemy.prefab");
+        GameObject enemy = null;
+        Enemy enemyComponent = null;
+        
+        if (enemyPrefab != null)
+        {
+            // Instantiate the prefab
+            enemy = PrefabUtility.InstantiatePrefab(enemyPrefab) as GameObject;
+            
+            if (enemy != null)
+            {
+                enemy.transform.position = new Vector3(5, 1, 5);
+                enemyComponent = enemy.GetComponent<Enemy>();
+                Debug.Log("Enemy created from prefab");
+            }
+            else
+            {
+                Debug.LogError("Failed to instantiate Enemy prefab. The prefab may be corrupted.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Enemy prefab not found at Assets/Prefabs/Enemy.prefab. Creating enemy manually as fallback.");
+            // Fallback: Create Enemy manually (old approach)
+            enemy = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            enemy.name = "Enemy";
+            enemy.tag = "Enemy";
+            enemy.transform.position = new Vector3(5, 1, 5);
+            enemyComponent = enemy.AddComponent<Enemy>();
+            
+            // Create Material for enemy
+            Material enemyMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+            enemyMat.color = Color.red;
+            enemy.GetComponent<MeshRenderer>().material = enemyMat;
+        }
         
         // Register enemy with manager
-        enemyManager.RegisterEnemy(enemyComponent);
-        
-        // Create Material for enemy
-        Material enemyMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        enemyMat.color = Color.red;
-        enemy.GetComponent<MeshRenderer>().material = enemyMat;
+        if (enemyComponent != null)
+        {
+            enemyManager.RegisterEnemy(enemyComponent);
+        }
         
         // Create Encounter Controller (will auto-discover enemies in Start)
         GameObject encounterObj = new GameObject("EncounterController");
